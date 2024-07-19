@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ScoreManager : MonoBehaviour, IObserver
 {
@@ -6,6 +8,8 @@ public class ScoreManager : MonoBehaviour, IObserver
     [SerializeField] private int scorePerBanana = 1;
 
     private BananaCollector[] bananas;
+
+    [SerializeField] private UnityEvent AllBananasCollected;
 
     private void Start()
     {
@@ -37,5 +41,18 @@ public class ScoreManager : MonoBehaviour, IObserver
     {
         score += scoreToAdd;
         EventManager.TriggerScoreChanged(score);
+
+        if(score == bananas.Length)
+        {
+            AllBananasCollected?.Invoke();
+            StartCoroutine(WaitToClose());
+        }
+    }
+
+    private IEnumerator WaitToClose()
+    {
+        yield return new WaitForSeconds(5f);
+
+        Application.Quit();
     }
 }
